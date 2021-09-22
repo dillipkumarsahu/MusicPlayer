@@ -1,2 +1,2 @@
 # MusicPlayer
-A simple music player made using jQuery
+A simple music player made using HTML5
