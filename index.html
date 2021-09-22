@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>Music player</title>
+	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+	<script type="text/javascript" src="js/jquery.js"></script>
+	<style>
+		#player{
+			width: 300px;
+			height: 480px;
+			border-top: 30px groove red;
+			border-bottom: 30px groove red;
+			border-radius: 30px;
+			box-shadow: 0px 0px 10px #ddd;
+			position: absolute;
+			top: 50%;
+			left: 50%;
+			transform: translate(-50%,-50%);
+		}
+		header{
+			width: 100%;
+			height: 70%;
+			background-image: url(images/demo.jpg);
+			background-size: cover;
+			position: relative;
+		}
+		footer{
+			width: 100%;
+			height: 30%;
+			background-image: url(images/footer_bg.jpg);
+			background-size: cover;
+			position: relative;
+		}
+		#controls{
+			width: 100%;
+			height: 100%;
+			background-color: rgba(0,0,0,0.5);
+			display: flex;
+			justify-content: space-around;
+			align-items: center;
+			position: relative;
+		}
+		#play-background{
+			width: 60px;
+			height: 60px;
+			border-radius: 50%;
+			background: white;
+			display: flex;
+			justify-content: center;
+			align-items: center;
+		}
+		#progress{
+			width: 75%;
+			height: 5px;
+			background: rgba(255,255,255,0.8);
+			position: absolute;
+			top: 15px;
+			border-radius: 8px;
+		}
+		#upload{
+			width: 40px;
+			margin: 10px;
+		}
+		#file-name{
+			color: white;
+			position: absolute;
+			left: 50%;
+			bottom: 10px;
+			transform: translate(-50%);
+			text-align: center;
+			font-weight: bold;
+		}
+		#progress-bar{
+			width: 0%;
+			height: 100%;
+			background: yellow;
+			border-radius: 8px;
+		}
+		#duration-time{
+			text-align: center;
+			color: white;
+			font-weight: bold;
+			margin:0;
+			padding: 0;
+		}
+	</style>
+</head>
+<body>
+	<div id="player">
+		<header>
+			<img src="images/upload.png" id="upload" onclick="upload()">
+			<p id="file-name"></p>
+		</header>
+		<footer>
+			<div id="controls">
+				<div id="progress">
+					<div id="progress-bar"></div>
+				</div>
+				<i class="fa fa-backward" style="color: white;font-size: 30px"></i>
+				<div id="play-background">
+					<i class="fa fa-play-circle" style="color: red;font-size: 70px;" id="play-pause"></i>
+				</div>
+				<i class="fa fa-forward" style="color: white;font-size: 30px;"></i>
+			</div>
+			<p id="duration-time"></p>
+		</footer>
+	</div>
+<script>
+	function upload(){
+		var input = document.createElement("INPUT");
+		input.type = "file";
+		input.accept = ".mp3";
+		input.click();
+		input.onchange = function(){
+			var song_name = this.files[0].name;
+			document.querySelector("#file-name").innerHTML = song_name;
+			var url = URL.createObjectURL(this.files[0]);
+			var audio = document.createElement("AUDIO");
+			audio.src = url;
+			audio.play();
+			document.querySelector("#upload").style.opacity = "0";
+			var header = document.querySelector("header");
+			header.style.backgroundImage = "url(images/waves.gif)";
+			audio.onplay = function(){
+				document.querySelector("#play-pause").className = "fa fa-pause-circle";
+				document.querySelector("#play-pause").onclick = function(){
+					audio.pause();
+					this.className = "fa fa-play-circle";
+					header.style.backgroundImage = "url(images/demo.jpg)";
+					document.querySelector("#upload").style.opacity = "1";
+				}
+			}
+			audio.onpause = function(){
+				document.querySelector("#play-pause").className = "fa fa-play-circle";
+				document.querySelector("#play-pause").onclick = function(){
+					audio.play();
+					this.className = "fa fa-pause-circle";
+					header.style.backgroundImage = "url(images/waves.gif)";
+					document.querySelector("#upload").style.opacity = "0";
+				}
+			}
+			audio.ontimeupdate = function(){
+				var duration = this.duration;
+				var current = this.currentTime;
+				var percentage = Math.floor((current*100)/duration);
+				document.querySelector("#progress-bar").style.width = percentage+"%"; 
+				document.querySelector("#duration-time").innerHTML = (current/60).toFixed(2)+" / "+(duration/60).toFixed(2);
+				document.querySelector("#progress").onclick = function(x){
+					var forward = x.offsetX/this.offsetWidth;
+					audio.currentTime = forward*audio.duration;
+				}
+			}
+		}
+	}
+</script>
+</body>
+</html>
